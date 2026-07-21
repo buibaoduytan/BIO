@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bio Duy Tan - Danni</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #8b7cf6;
+            --accent-soft: rgba(139, 124, 246, 0.35);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* ---- Enter overlay ---- */
+        #enter-overlay {
+            transition: opacity .6s ease;
+        }
+        #enter-overlay.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .enter-ring {
+            animation: pulse-ring 2s ease-out infinite;
+        }
+        @keyframes pulse-ring {
+            0%   { box-shadow: 0 0 0 0 var(--accent-soft); }
+            70%  { box-shadow: 0 0 0 18px rgba(139, 124, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(139, 124, 246, 0); }
+        }
+
+        /* ---- Card reveal ---- */
+        #main-card {
+            opacity: 0;
+        }
+        #main-card.revealed .reveal {
+            animation: fadeInUp .7s cubic-bezier(.16,.84,.44,1) forwards;
+        }
+        #main-card.revealed {
+            opacity: 1;
+        }
+        .reveal {
+            opacity: 0;
+            transform: translateY(14px);
+        }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .d1 { animation-delay: .05s; }
+        .d2 { animation-delay: .15s; }
+        .d3 { animation-delay: .25s; }
+        .d4 { animation-delay: .35s; }
+        .d5 { animation-delay: .45s; }
+
+        /* ---- Equalizer signature element ---- */
+        .eq {
+            display: inline-flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 14px;
+        }
+        .eq span {
+            width: 3px;
+            background: var(--accent);
+            border-radius: 2px;
+            animation: eq-bounce 1s ease-in-out infinite;
+        }
+        .eq span:nth-child(1) { animation-delay: 0s; }
+        .eq span:nth-child(2) { animation-delay: .2s; }
+        .eq span:nth-child(3) { animation-delay: .4s; }
+        .eq span:nth-child(4) { animation-delay: .1s; }
+        .eq.paused span {
+            animation-play-state: paused;
+            height: 3px !important;
+        }
+        @keyframes eq-bounce {
+            0%, 100% { height: 3px; }
+            50% { height: 14px; }
+        }
+
+        /* ---- Floating card ---- */
+        #main-card.revealed {
+            animation: card-float 5s ease-in-out .8s infinite;
+        }
+        @keyframes card-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ---- Animated background orbs ---- */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: .35;
+            pointer-events: none;
+        }
+        .orb-1 {
+            width: 380px; height: 380px;
+            background: #8b7cf6;
+            top: -120px; left: -100px;
+            animation: orb-drift-1 16s ease-in-out infinite;
+        }
+        .orb-2 {
+            width: 320px; height: 320px;
+            background: #f767b1;
+            bottom: -120px; right: -80px;
+            animation: orb-drift-2 18s ease-in-out infinite;
+        }
+        .orb-3 {
+            width: 260px; height: 260px;
+            background: #56d3ff;
+            top: 40%; right: 10%;
+            animation: orb-drift-3 14s ease-in-out infinite;
+        }
+        @keyframes orb-drift-1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(60px, 40px) scale(1.15); }
+        }
+        @keyframes orb-drift-2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-50px, -30px) scale(1.1); }
+        }
+        @keyframes orb-drift-3 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-40px, 50px) scale(1.2); }
+        }
+
+        /* ---- Social tooltips ---- */
+        .social-item {
+            position: relative;
+        }
+        .social-tip {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translate(-50%, 4px);
+            background: #18181b;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 4px 9px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .18s ease, transform .18s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .social-tip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: #18181b;
+        }
+        .social-item:hover .social-tip {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        /* ---- Vinyl avatar ---- */
+        .vinyl-wrap {
+            position: relative;
+        }
+        @keyframes vinyl-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ---- Vinyl record disc, left of avatar ---- */
+        .vinyl-disc-wrap {
+            position: absolute;
+            left: -68px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 112px;
+            height: 112px;
+            z-index: 0;
+        }
+        .vinyl-disc-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 2px dashed rgba(139, 124, 246, 0.5);
+            opacity: 0;
+            transition: opacity .3s ease;
+        }
+        .vinyl-disc-wrap.spinning::before {
+            opacity: 1;
+            animation: vinyl-spin 6s linear infinite;
+        }
+        .vinyl-disc {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.08);
+            background:
+                repeating-radial-gradient(circle, rgba(255,255,255,0.07) 0px, rgba(255,255,255,0.07) 1px, transparent 1px, transparent 4px),
+                radial-gradient(circle, #1e1e1e 0%, #0e0e0e 70%, #050505 100%);
+            box-shadow: 0 8px 20px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,0.03);
+        }
+        .vinyl-disc::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            margin: auto;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px var(--accent-soft);
+        }
+        .vinyl-disc::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            margin: auto;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #0a0a0a;
+        }
+        .vinyl-disc.spinning {
+            animation: vinyl-spin 3.5s linear infinite;
+        }
+
+        /* ---- Volume slider ---- */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.15);
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 0 4px var(--accent-soft);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            border: none;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 0 4px var(--accent-soft);
+        }
+
+        /* ---- Glow effects ---- */
+        .glow-text {
+            text-shadow: 0 0 10px rgba(255,255,255,.55), 0 0 22px var(--accent-soft), 0 0 42px var(--accent-soft);
+        }
+        .social-item svg {
+            transition: filter .25s ease, color .2s ease;
+        }
+        .social-item:hover svg {
+            filter: drop-shadow(0 0 6px var(--accent)) drop-shadow(0 0 16px var(--accent-soft));
+        }
+        .eq span {
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        /* ---- Flip card ---- */
+        .flip-perspective {
+            perspective: 1400px;
+        }
+        .flip-inner {
+            display: grid;
+            transition: transform .8s cubic-bezier(.4,.2,.2,1);
+            transform-style: preserve-3d;
+        }
+        .card-face {
+            grid-area: 1 / 1;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        .flip-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flip-hint {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 14px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.75);
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+        .flip-hint:hover {
+            color: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 0 12px var(--accent-soft);
+        }
+
+        .flip-back-btn {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #fff;
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+        .flip-back-btn:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-soft);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .info-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+        .info-value {
+            font-size: 13px;
+            color: rgba(255,255,255,0.95);
+            font-weight: 600;
+        }
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 6px #4ade80;
+            display: inline-block;
+        }
+
+        /* ---- Typewriter name ---- */
+        .typewriter-cursor {
+            display: inline-block;
+            margin-left: 2px;
+            color: var(--accent);
+            animation: tw-blink 1s step-start infinite;
+        }
+        @keyframes tw-blink {
+            50% { opacity: 0; }
+        }
+
+        /* ---- Seek / progress bar ---- */
+        #seek {
+            height: 3px;
+        }
+        #seek::-webkit-slider-thumb {
+            width: 10px;
+            height: 10px;
+        }
+        #seek::-moz-range-thumb {
+            width: 10px;
+            height: 10px;
+        }
+
+        /* ---- Accordion info sections (card back) ---- */
+        .info-section {
+            border-radius: 10px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            overflow: hidden;
+            transition: border-color .2s ease;
+        }
+        .info-section.open {
+            border-color: rgba(139, 124, 246, 0.4);
+        }
+        .info-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+        }
+        .info-header .chevron {
+            color: rgba(255,255,255,0.45);
+            transition: transform .25s ease;
+            flex-shrink: 0;
+        }
+        .info-section.open .info-header .chevron {
+            transform: rotate(180deg);
+            color: var(--accent);
+        }
+        .info-detail {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .3s ease, padding .3s ease;
+            padding: 0 12px;
+        }
+        .info-section.open .info-detail {
+            max-height: 100px;
+            padding: 0 12px 10px;
+        }
+        .info-detail p {
+            font-size: 11px;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.45;
+        }
+
+        /* ---- Album art (bigger) ---- */
+        .album-art {
+            position: relative;
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: #0d0d0d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .album-art img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+        .album-note {
+            color: rgba(255,255,255,0.35);
+        }
+        .album-art.spinning-note .album-note {
+            animation: eq-bounce 1.2s ease-in-out infinite;
+        }
+
+        /* ---- Rain effect ---- */
+        #rain-container {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .raindrop {
+            position: absolute;
+            top: -15%;
+            width: 1px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(200,220,255,0.45) 60%, rgba(200,220,255,0.7) 100%);
+            animation: rain-fall linear infinite;
+            transform: rotate(8deg);
+        }
+        @keyframes rain-fall {
+            to { transform: translateY(130vh) rotate(8deg); }
+        }
+
+        /* ---- Avatar glow ring + pulse ---- */
+        #avatar {
+            cursor: pointer;
+            animation: avatar-pulse 2.5s ease-in-out infinite;
+        }
+        #avatar:hover {
+            filter: brightness(1.1);
+        }
+        .vinyl-wrap.spinning {
+            animation: avatar-pulse 2.5s ease-in-out infinite, vinyl-spin 4s linear infinite;
+        }
+        @keyframes avatar-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(139,124,246,0.45); }
+            50% { box-shadow: 0 0 20px 5px rgba(139,124,246,0.35); }
+        }
+        .avatar-ring {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 128px;
+            height: 128px;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            padding: 3px;
+            background: conic-gradient(from 0deg, var(--accent), #56d3ff, #f767b1, var(--accent));
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+            mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+            animation: ring-rotate 5s linear infinite;
+            pointer-events: none;
+            z-index: 5;
+            opacity: .85;
+        }
+        @keyframes ring-rotate {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* ---- Presence dot ---- */
+        .presence-dot {
+            position: absolute;
+            right: 2px;
+            bottom: 2px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #4ade80;
+            border: 3px solid #09090b;
+            z-index: 20;
+        }
+        .presence-dot::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid rgba(74, 222, 128, 0.5);
+            animation: presence-ping 2s ease-out infinite;
+        }
+        @keyframes presence-ping {
+            0% { transform: scale(.8); opacity: 1; }
+            100% { transform: scale(1.7); opacity: 0; }
+        }
+
+        /* ---- Click-burst particles on avatar ---- */
+        .burst-particle {
+            position: absolute;
+            left: 50%;
+            bottom: 50%;
+            font-size: 16px;
+            pointer-events: none;
+            animation: burst-float ease-out forwards;
+            z-index: 30;
+        }
+        @keyframes burst-float {
+            0% { transform: translate(-50%, 0) scale(.6); opacity: 1; }
+            100% { transform: translate(calc(-50% + var(--drift)), -95px) scale(1.15); opacity: 0; }
+        }
+
+        /* ---- Hoverable name (retriggers typewriter) ---- */
+        .name-heading {
+            cursor: pointer;
+            transition: opacity .2s ease;
+        }
+        .name-heading:hover {
+            opacity: .85;
+        }
+
+        /* ---- Creative card glow ---- */
+        .card-front, .card-back {
+            animation: card-glow 6s ease-in-out infinite;
+        }
+        @keyframes card-glow {
+            0%, 100% { box-shadow: 0 0 30px -6px rgba(139,124,246,0.28); }
+            50% { box-shadow: 0 0 42px -6px rgba(247,103,177,0.3); }
+        }
+
+        /* ---- Interest tag pills ---- */
+        .tag-pill {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 11px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.8);
+            transition: all .2s ease;
+        }
+        .tag-pill:hover {
+            border-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 10px var(--accent-soft);
+        }
+
+        /* ---- Ferrari drive-by entrance effect ---- */
+        .car-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 25;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .car {
+            position: absolute;
+            top: 58%;
+            left: -260px;
+            width: 220px;
+            opacity: 0;
+        }
+        .car.driving {
+            animation: car-drive 1.6s cubic-bezier(.4,0,.6,1) forwards, car-bounce .3s ease-in-out infinite;
+        }
+        @keyframes car-drive {
+            0%   { left: -260px; opacity: 1; }
+            6%   { opacity: 1; }
+            94%  { opacity: 1; }
+            100% { left: 120%; opacity: 1; }
+        }
+        @keyframes car-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        .car img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 14px 18px rgba(0,0,0,.5));
+        }
+        .smoke-puff {
+            position: fixed;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(190,190,195,0.55), rgba(190,190,195,0) 72%);
+            animation: smoke-rise .75s ease-out forwards;
+            pointer-events: none;
+            z-index: 24;
+        }
+        @keyframes smoke-rise {
+            0%   { transform: translate(0, 0) scale(.5); opacity: .6; }
+            100% { transform: translate(-26px, -34px) scale(1.9); opacity: 0; }
+        }
+
+        /* ---- Album art zoom + aura ---- */
+        #album-art {
+            cursor: pointer;
+            transition: transform .15s ease;
+        }
+        #album-art:hover {
+            transform: scale(1.05);
+        }
+        .album-zoom {
+            position: fixed;
+            inset: 0;
+            z-index: 40;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(5,5,10,0.72);
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s ease;
+        }
+        .album-zoom.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .album-zoom-inner {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            border-radius: 24px;
+            background: #0d0d0d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transform: scale(.6);
+            transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 25px 60px rgba(0,0,0,.6);
+        }
+        .album-zoom.open .album-zoom-inner {
+            transform: scale(1);
+        }
+        .album-zoom-inner::before {
+            content: '';
+            position: absolute;
+            inset: -24px;
+            border-radius: 32px;
+            background: conic-gradient(from 0deg, var(--accent), #56d3ff, #f767b1, var(--accent));
+            filter: blur(30px);
+            opacity: .6;
+            z-index: -1;
+            animation: aura-rotate 6s linear infinite;
+        }
+        @keyframes aura-rotate {
+            to { transform: rotate(360deg); }
+        }
+        .album-zoom-inner img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+        .album-zoom-inner .album-note-big {
+            color: rgba(255,255,255,0.35);
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 min-h-screen flex flex-col items-center justify-center relative overflow-hidden select-none px-4">
+
+    <img
+        src="img/back.jpg"
+        alt="Background"
+        class="absolute inset-0 w-full h-full object-cover brightness-[0.4] pointer-events-none scale-105"
+    >
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div id="rain-container"></div>
+
+    <!-- Audio: replace src with your own music file -->
+    <audio id="bg-audio" src="img/Emiu.mp3" loop preload="auto"></audio>
+
+    <!-- Click-to-enter overlay (required so the browser allows sound to play) -->
+    <div id="enter-overlay" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-zinc-950/70 backdrop-blur-sm cursor-pointer">
+        <div id="enter-prompt" class="flex flex-col items-center gap-4 transition-opacity duration-300">
+            <div class="enter-ring w-16 h-16 rounded-full border border-white/30 flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+            <p class="text-white/90 text-sm font-medium tracking-wide">Nhấn để vào</p>
+        </div>
+    </div>
+
+    <!-- Engine sound: replace src with your own sound effect -->
+    <audio id="engine-sound" src="img/mixkit-speeding-swoosh-1484.wav" preload="auto"></audio>
+
+    <div id="car-layer" class="car-layer">
+        <div id="car" class="car">
+            <!-- Replace with your own car image -->
+            <img src="img/satria.png" alt="Xe">
+        </div>
+    </div>
+
+    <div id="album-zoom" class="album-zoom">
+        <div class="album-zoom-inner">
+            <img src="img/music.jpeg" alt="Bìa bài hát" onerror="this.style.display='none'">
+            <svg class="album-note-big w-16 h-16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+        </div>
+    </div>
+
+    <main id="main-card" class="relative z-10 w-full max-w-112.5 shadow-2xl text-center">
+      <div class="flip-perspective">
+        <div id="flip-inner" class="flip-inner">
+          <div class="card-face card-front relative bg-white/6 backdrop-blur-xl border border-white/8 rounded-3xl p-8 flex flex-col items-center justify-center transition-all duration-300 hover:border-white/15">
+
+        <div class="reveal d1 relative flex items-center justify-center mb-4">
+            <div id="vinyl-disc-wrap" class="vinyl-disc-wrap">
+                <div id="vinyl-disc" class="vinyl-disc"></div>
+            </div>
+            <div class="avatar-ring"></div>
+            <div id="avatar" class="vinyl-wrap relative z-10 w-28 h-28 rounded-full overflow-hidden border-2 border-white/20 shadow-lg">
+                <img
+                    src="img/Default.jpg"
+                    alt="Avatar"
+                    class="w-full h-full object-cover"
+                >
+            </div>
+            <div class="presence-dot"></div>
+        </div>
+
+        <h1 id="name-heading" class="reveal d2 name-heading glow-text font-display text-white text-2xl font-bold tracking-wide">
+            <span id="typewriter-text"></span><span class="typewriter-cursor">|</span>
+        </h1>
+
+        <p class="reveal d3 text-zinc-100/90 text-sm mt-1 mb-3 font-medium leading-relaxed">
+            Call me Danni, I'm a passionate web developer and designer. I love creating beautiful and functional websites that provide great user experiences.
+        </p>
+
+        <div class="reveal d3 flex flex-wrap items-center justify-center gap-2 mb-6">
+            <span class="tag-pill">💻 Web Dev</span>
+            <span class="tag-pill">🎮 Gaming</span>
+            <span class="tag-pill">🎵 Music</span>
+        </div>
+
+        <div class="reveal d4 flex items-center justify-center gap-4 text-white/80 mb-6">
+            <a href="#" class="social-item hover:text-white hover:scale-110 transition-all duration-200">
+                <span class="social-tip">Discord</span>
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.094 13.094 0 0 1-1.873-.894.077.077 0 0 1-.008-.128c.126-.093.252-.19.372-.287a.075.075 0 0 1 .077-.011c3.92 1.793 8.18 1.793 12.061 0a.073.073 0 0 1 .078.009c.12.099.246.195.373.289a.075.075 0 0 1-.006.127 12.298 12.298 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.156-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.156 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.156-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.156 2.418z"/></svg>
+            </a>
+
+            <a href="#" class="social-item hover:text-white hover:scale-110 transition-all duration-200">
+                <span class="social-tip">Spotify</span>
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.563.387-.857.207-2.377-1.454-5.37-1.783-8.893-.982-.336.075-.67-.136-.746-.472-.075-.336.136-.67.472-.746 3.848-.878 7.144-.51 9.817 1.127.295.18.387.563.207.857zm1.225-2.72c-.227.367-.707.487-1.074.26-2.72-1.672-6.87-2.157-10.082-1.182-.413.125-.847-.107-.972-.52-.125-.413.107-.847.52-.972 3.676-1.114 8.24-.57 11.35 1.343.366.226.486.706.258 1.072zm.105-2.833C14.383 8.8 8.127 8.586 4.54 9.674c-.543.165-1.11-.143-1.275-.686-.165-.543.143-1.11.686-1.275 4.122-1.25 11.02-.997 15.125 1.44.49.29.65.923.36 1.41-.29.49-.923.65-1.41.36z"/></svg>
+            </a>
+
+            <a href="#" class="social-item hover:text-white hover:scale-110 transition-all duration-200">
+                <span class="social-tip">Instagram</span>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            </a>
+
+            <a href="https://www.facebook.com/duy.tan.ep.trai.2025/" class="social-item hover:text-white hover:scale-110 transition-all duration-200">
+                <span class="social-tip">Facebook</span>
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+            </a>
+
+            <a href="https://www.tiktok.com/@conchimthucvat" class="social-item hover:text-white hover:scale-110 transition-all duration-200">
+                <span class="social-tip">TikTok</span>
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.032 2.61.01 3.91-.02.08 1.53.63 3.01 1.63 4.14 1.12 1.15 2.68 1.81 4.26 2.01v3.62c-1.74-.03-3.46-.57-4.88-1.58-.15-.11-.29-.22-.42-.34v6.52c.06 1.84-.46 3.69-1.53 5.17-1.42 2-3.82 3.19-6.31 3.11-2.88-.04-5.61-1.89-6.66-4.57-1.24-2.99-.46-6.69 1.99-8.83 1.6-1.44 3.78-2.13 5.92-1.9v3.63c-1.24-.12-2.53.25-3.44 1.13-.99 1-1.21 2.61-.51 3.84.66 1.19 2.07 1.94 3.44 1.84 1.54-.05 2.92-1.2 3.14-2.73.06-.31.07-.63.07-.94V.02z"/></svg>
+            </a>
+
+            <a href="https://github.com/buibaoduytan" class="social-item hover:text-white hover:scale-110 transition-all duration-200">
+                <span class="social-tip">GitHub</span>
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            </a>
+        </div>
+
+        <!-- Music player -->
+        <div class="reveal d5 w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 flex flex-col gap-2">
+            <div class="flex items-center gap-3">
+                <div id="album-art" class="album-art">
+                    <img src="img/music.jpeg" alt="Bìa bài hát" onerror="this.style.display='none'">
+                    <svg class="album-note w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+                </div>
+
+                <button id="play-btn" class="text-white/90 hover:text-white shrink-0" aria-label="Phát / Tạm dừng">
+                    <svg id="icon-pause" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+                    <svg id="icon-play" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+
+                <div class="eq" id="eq">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+
+                <span id="song-title" class="text-xs text-zinc-200/90 font-semibold truncate flex-1 text-left">Em Iu - (Kirimi Remix)
+</span>
+
+                <svg class="w-4 h-4 text-white/70 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 7.97v8.05a4.48 4.48 0 0 0 2.5-4.02z"/></svg>
+                <input id="volume" type="range" min="0" max="1" step="0.01" value="0.6" class="w-16 shrink-0">
+            </div>
+
+            <div class="flex items-center gap-2">
+                <span id="current-time" class="text-[10px] text-zinc-400 tabular-nums w-8 shrink-0">0:00</span>
+                <input id="seek" type="range" min="0" max="100" step="0.1" value="0" class="w-full">
+                <span id="duration-time" class="text-[10px] text-zinc-400 tabular-nums w-8 shrink-0 text-right">0:00</span>
+            </div>
+        </div>
+
+        <div class="absolute bottom-4 left-5 flex items-center gap-1.5 text-white text-xs">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span>7</span>
+        </div>
+
+        <button id="flip-hint" class="flip-hint reveal d5" aria-label="Xem thêm thông tin">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>Xem thêm</span>
+        </button>
+
+          </div>
+
+          <div class="card-face card-back relative bg-white/6 backdrop-blur-xl border border-white/8 rounded-3xl p-8 flex flex-col items-center justify-center gap-4">
+            <button id="flip-back" class="flip-back-btn" aria-label="Quay lại">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </button>
+
+            <h2 class="glow-text font-display text-white text-lg font-bold tracking-wide">Thông tin thêm</h2>
+
+            <div class="w-full grid grid-cols-2 gap-2 text-left">
+                <div class="info-section">
+                    <button class="info-header">
+                        <span class="info-label">Tên thật</span>
+                        <span class="info-value">Duy Tân</span>
+                        <svg class="chevron w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div class="info-detail">
+                        <p>Tên thật là Duy Tân, thường được gọi thân mật là Danni hoặc Tanbacu.</p>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <button class="info-header">
+                        <span class="info-label">Tuổi</span>
+                        <span class="info-value"> 2K10 </span>
+                        <svg class="chevron w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div class="info-detail">
+                        <p>Not Available</p>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <button class="info-header">
+                        <span class="info-label">Nghề nghiệp</span>
+                        <span class="info-value">High School Student, Web Developer</span>
+                        <svg class="chevron w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div class="info-detail">
+                        <p>Hiện đang làm Web Dev &amp; Competitive Coder, tập trung vào Thuật toán,giao diện và trải nghiệm người dùng.</p>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <button class="info-header">
+                        <span class="info-label">Vị trí</span>
+                        <span class="info-value">Đồng Tháp, Việt Nam</span>
+                        <svg class="chevron w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div class="info-detail">
+                        <p>Hiện đang sinh sống tại Long Khánh, Đồng Tháp.</p>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <button class="info-header">
+                        <span class="info-label">Sở thích</span>
+                        <span class="info-value">Code, nhạc, game</span>
+                        <svg class="chevron w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div class="info-detail">
+                        <p>Thích Coding, nghe nhạc Sếp Tùng, và chơi Minecraft vào lúc rảnh.</p>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <button class="info-header">
+                        <span class="info-label">Trạng thái</span>
+                        <span class="info-value flex items-center gap-1.5"><span class="status-dot"></span>Online</span>
+                        <svg class="chevron w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div class="info-detail">
+                        <p>Thường online vào buổi tối và phản hồi tin nhắn khá nhanh.</p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-xs text-zinc-300/70 mt-1">Nhấn mũi tên để quay lại trang chính</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+        const overlay = document.getElementById('enter-overlay');
+        const card = document.getElementById('main-card');
+        const audio = document.getElementById('bg-audio');
+        const playBtn = document.getElementById('play-btn');
+        const iconPlay = document.getElementById('icon-play');
+        const iconPause = document.getElementById('icon-pause');
+        const volume = document.getElementById('volume');
+        const eq = document.getElementById('eq');
+        const avatar = document.getElementById('avatar');
+        const vinylDisc = document.getElementById('vinyl-disc');
+        const vinylDiscWrap = document.getElementById('vinyl-disc-wrap');
+        const flipInner = document.getElementById('flip-inner');
+        const cardFront = document.querySelector('.card-front');
+        const flipBackBtn = document.getElementById('flip-back');
+        const twText = document.getElementById('typewriter-text');
+        const seek = document.getElementById('seek');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationTimeEl = document.getElementById('duration-time');
+        const songTitleEl = document.getElementById('song-title');
+        const albumArt = document.getElementById('album-art');
+
+        // Edit these two to match your own track
+        const SONG_TITLE = 'Tên bài hát';
+        const DISPLAY_NAME = 'Danni Bui';
+
+        songTitleEl.textContent = SONG_TITLE;
+
+        function formatTime(sec) {
+            if (!isFinite(sec) || isNaN(sec)) return '0:00';
+            const m = Math.floor(sec / 60);
+            const s = Math.floor(sec % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        let twTimer = null;
+        function typeWriter(text, el, speed = 90) {
+            if (twTimer) clearInterval(twTimer);
+            let i = 0;
+            el.textContent = '';
+            twTimer = setInterval(() => {
+                el.textContent += text[i];
+                i++;
+                if (i >= text.length) clearInterval(twTimer);
+            }, speed);
+        }
+
+        function spawnSmoke(carEl) {
+            const rect = carEl.getBoundingClientRect();
+            const puff = document.createElement('div');
+            puff.className = 'smoke-puff';
+            const size = 10 + Math.random() * 16;
+            puff.style.width = size + 'px';
+            puff.style.height = size + 'px';
+            puff.style.left = (rect.left + rect.width * 0.05) + 'px';
+            puff.style.top = (rect.top + rect.height * 0.62) + 'px';
+            document.getElementById('car-layer').appendChild(puff);
+            puff.addEventListener('animationend', () => puff.remove());
+        }
+
+        audio.volume = parseFloat(volume.value);
+
+        // Click anywhere on the front (except links/buttons/inputs) flips to the info side
+        cardFront.addEventListener('click', (e) => {
+            if (e.target.closest('#flip-hint')) {
+                flipInner.classList.add('flipped');
+                return;
+            }
+            if (e.target.closest('a, button, input')) return;
+            flipInner.classList.add('flipped');
+        });
+        flipBackBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            flipInner.classList.remove('flipped');
+        });
+
+        function enter() {
+            document.getElementById('enter-prompt').style.opacity = '0';
+            car.classList.add('driving');
+            engineSound.currentTime = 0;
+            engineSound.play().catch(() => {});
+            const smokeTimer = setInterval(() => spawnSmoke(car), 55);
+            setTimeout(() => clearInterval(smokeTimer), 1500);
+            setTimeout(() => {
+                engineSound.pause();
+            }, 1600);
+
+            setTimeout(() => {
+                audio.play().catch(() => {});
+                overlay.classList.add('hide');
+                card.classList.add('revealed');
+                setTimeout(() => overlay.remove(), 700);
+                setTimeout(() => typeWriter(DISPLAY_NAME, twText), 900);
+            }, 1350);
+        }
+        overlay.addEventListener('click', enter);
+
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play().catch(() => {});
+            } else {
+                audio.pause();
+            }
+        });
+
+        audio.addEventListener('play', () => {
+            iconPlay.classList.add('hidden');
+            iconPause.classList.remove('hidden');
+            eq.classList.remove('paused');
+            avatar.classList.add('spinning');
+            vinylDisc.classList.add('spinning');
+            vinylDiscWrap.classList.add('spinning');
+            albumArt.classList.add('spinning-note');
+        });
+        audio.addEventListener('pause', () => {
+            iconPlay.classList.remove('hidden');
+            iconPause.classList.add('hidden');
+            eq.classList.add('paused');
+            avatar.classList.remove('spinning');
+            vinylDisc.classList.remove('spinning');
+            vinylDiscWrap.classList.remove('spinning');
+            albumArt.classList.remove('spinning-note');
+        });
+
+        audio.addEventListener('loadedmetadata', () => {
+            durationTimeEl.textContent = formatTime(audio.duration);
+        });
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                seek.value = (audio.currentTime / audio.duration) * 100;
+            }
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+            durationTimeEl.textContent = formatTime(audio.duration);
+        });
+        seek.addEventListener('input', () => {
+            if (audio.duration) {
+                audio.currentTime = (seek.value / 100) * audio.duration;
+            }
+        });
+
+        volume.addEventListener('input', () => {
+            audio.volume = parseFloat(volume.value);
+        });
+
+        // Click the album art to pop it up with a glowing aura
+        const albumZoom = document.getElementById('album-zoom');
+        albumArt.addEventListener('click', (e) => {
+            e.stopPropagation();
+            albumZoom.classList.add('open');
+        });
+        albumZoom.addEventListener('click', () => {
+            albumZoom.classList.remove('open');
+        });
+
+        // Expandable info sections on the back of the card
+        document.querySelectorAll('.info-header').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                btn.closest('.info-section').classList.toggle('open');
+            });
+        });
+
+        // Hover the name to replay the typewriter effect
+        const nameHeading = document.getElementById('name-heading');
+        const car = document.getElementById('car');
+        const engineSound = document.getElementById('engine-sound');
+        nameHeading.addEventListener('mouseenter', () => {
+            typeWriter(DISPLAY_NAME, twText);
+        });
+
+        // Fun easter egg: click the avatar for a little particle burst
+        const avatarWrap = avatar.parentElement;
+        const burstEmojis = ['💜', '✨', '🎵', '⭐'];
+        avatar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            for (let i = 0; i < 7; i++) {
+                const p = document.createElement('span');
+                p.textContent = burstEmojis[Math.floor(Math.random() * burstEmojis.length)];
+                p.className = 'burst-particle';
+                p.style.setProperty('--drift', (Math.random() * 70 - 35) + 'px');
+                p.style.animationDuration = (0.8 + Math.random() * 0.6) + 's';
+                avatarWrap.appendChild(p);
+                p.addEventListener('animationend', () => p.remove());
+            }
+        });
+
+        // Ambient rain effect in the background
+        (function createRain() {
+            const container = document.getElementById('rain-container');
+            const dropCount = 70;
+            for (let i = 0; i < dropCount; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'raindrop';
+                const left = Math.random() * 100;
+                const duration = 0.5 + Math.random() * 0.7;
+                const delay = Math.random() * 3;
+                const height = 30 + Math.random() * 70;
+                drop.style.left = left + '%';
+                drop.style.height = height + 'px';
+                drop.style.animationDuration = duration + 's';
+                drop.style.animationDelay = '-' + delay + 's';
+                drop.style.opacity = (0.15 + Math.random() * 0.45).toFixed(2);
+                container.appendChild(drop);
+            }
+        })();
+    </script>
+
+</body>
+</html>
